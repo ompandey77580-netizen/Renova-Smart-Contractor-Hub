@@ -1,0 +1,40 @@
+<!-- templates/projects.html - searchable open projects -->
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<h2>Open projects</h2>
+<form class="filters" method="get">
+  <input type="text" name="q" placeholder="Search title or details"
+         value="{{ request.args.get('q', '') }}">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}
+    <option value="{{ c }}"
+      {{ 'selected' if request.args.get('category') == c }}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <input type="text" name="city" placeholder="City" size="10"
+         value="{{ request.args.get('city', '') }}">
+  <button class="btn-primary" type="submit">Filter</button>
+</form>
+
+<table class="tbl">
+  <tr><th>Project</th><th>Category</th><th>City</th>
+      <th>Budget (Rs.)</th><th>Deadline</th><th></th></tr>
+  {% for p in projects %}
+  <tr>
+    <td>{{ p.title }}</td>
+    <td>{{ p.category }}</td>
+    <td>{{ p.city }}</td>
+    <td>{{ '%0.0f'|format(p.budget_min) }} -
+        {{ '%0.0f'|format(p.budget_max) }}</td>
+    <td>{{ p.deadline }}</td>
+    <td><a href="{{ url_for('projects.project_detail',
+           pid=p.project_id) }}">View / Bid</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">
+      No open project matches your filters.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

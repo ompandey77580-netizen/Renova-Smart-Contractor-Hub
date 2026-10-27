@@ -1,0 +1,33 @@
+<!-- templates/project_form.html - post or edit a renovation project -->
+{% extends "base.html" %}
+{% block title %}Post Project{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Post a renovation project</h2>
+  <form method="post" novalidate>
+    <label>Title</label>
+    <input type="text" name="title" required maxlength="150"
+           placeholder="e.g. Paint 2BHK flat in Vasai West">
+    <label>Category</label>
+    <select name="category" required>
+      {% for c in categories %}
+      <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+    <label>City</label>
+    <input type="text" name="city" required maxlength="60">
+    <label>Budget minimum (Rs.)</label>
+    <input type="number" name="budget_min" min="1" step="0.01" required>
+    <label>Budget maximum (Rs.)</label>
+    <input type="number" name="budget_max" min="1" step="0.01" required>
+    <label>Work start date</label>
+    <input type="date" name="start_date" required>
+    <label>Deadline (bidding closes)</label>
+    <input type="date" name="deadline" required>
+    <label>Description of the work</label>
+    <textarea name="description" rows="6" required
+       placeholder="Rooms, measurements, materials, restrictions..."></textarea>
+    <button class="btn-primary" type="submit">Publish project</button>
+  </form>
+</div>
+{% endblock %}

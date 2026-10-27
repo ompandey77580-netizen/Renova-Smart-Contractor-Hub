@@ -1,0 +1,52 @@
+<!-- templates/admin.html - user management and verification -->
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<h2>Administration panel</h2>
+<div class="cards">
+  <div class="stat"><span class="num">{{ counts.users }}</span>
+    <span class="lbl">Total users</span></div>
+  <div class="stat"><span class="num">{{ counts.contractors }}</span>
+    <span class="lbl">Contractors</span></div>
+  <div class="stat"><span class="num">{{ counts.projects }}</span>
+    <span class="lbl">Projects</span></div>
+  <div class="stat"><span class="num">Rs. {{ '%0.0f'|format(counts.revenue) }}</span>
+    <span class="lbl">Revenue (incl. GST)</span></div>
+</div>
+
+<h3>Users</h3>
+<table class="tbl">
+  <tr><th>Name</th><th>Role</th><th>City</th><th>Trade</th>
+      <th>Rating</th><th>Verified</th><th>Actions</th></tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.name }}</td>
+    <td>{{ u.role }}</td>
+    <td>{{ u.city }}</td>
+    <td>{{ u.specialization or '-' }}</td>
+    <td>{{ '%0.1f'|format(u.rating_avg or 0) }}</td>
+    <td>{% if u.verified %}<span class="badge badge-paid">Yes</span>
+        {% else %}<span class="badge badge-open">No</span>{% endif %}</td>
+    <td>
+      {% if u.contractor_id %}
+      <form method="post"
+        action="{{ url_for('admin.verify', contractor_id=u.contractor_id) }}">
+        <input type="hidden" name="current"
+               value="{{ 1 if u.verified else 0 }}">
+        <button class="btn-primary">
+          {{ 'Un-verify' if u.verified else 'Verify' }}</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3>Reports and backup</h3>
+<a class="btn-primary" href="{{ url_for('reports.admin_reports') }}">
+   Revenue report</a>
+<a class="btn-primary" href="{{ url_for('reports.export_csv') }}">
+   Export CSV</a>
+<a class="btn-primary" href="{{ url_for('admin.backup') }}">
+   Backup database</a>
+{% endblock %}

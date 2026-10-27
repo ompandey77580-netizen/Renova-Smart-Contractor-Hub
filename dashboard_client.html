@@ -1,0 +1,35 @@
+<!-- templates/dashboard_client.html (contractor variant is similar) -->
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ session.name }}</h2>
+<div class="cards">
+  <div class="stat"><span class="num">{{ s.projects or 0 }}</span>
+    <span class="lbl">My projects</span></div>
+  <div class="stat"><span class="num">{{ s.open_projects or 0 }}</span>
+    <span class="lbl">Open for bids</span></div>
+  <div class="stat"><span class="num">{{ s.active_projects or 0 }}</span>
+    <span class="lbl">In progress</span></div>
+  <div class="stat"><span class="num">{{ s.pending_bids or 0 }}</span>
+    <span class="lbl">Bids waiting</span></div>
+</div>
+
+<h3>My contracts</h3>
+<table class="tbl">
+  <tr><th>Project</th><th>Contractor</th><th>Progress</th>
+      <th>Status</th><th></th></tr>
+  {% for c in contracts %}
+  <tr class="{{ 'row-danger' if c.overdue else '' }}">
+    <td>{{ c.project_title }}</td>
+    <td>{{ c.contractor_name }}</td>
+    <td>{{ c.paid_stages }} / {{ c.total_stages }} milestones paid</td>
+    <td><span class="badge badge-{{ c.status|lower }}">
+        {{ c.status }}</span></td>
+    <td><a href="{{ url_for('contracts.contract', cid=c.contract_id) }}">
+        Open</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" class="muted">No contracts yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

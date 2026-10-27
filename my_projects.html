@@ -1,0 +1,29 @@
+<!-- templates/my_projects.html - client's own project list -->
+{% extends "base.html" %}
+{% block title %}My Projects{% endblock %}
+{% block content %}
+<h2>My projects</h2>
+<table class="tbl">
+  <tr><th>Title</th><th>Category</th><th>Budget (Rs.)</th>
+      <th>Deadline</th><th>Status</th><th>Bids</th><th></th></tr>
+  {% for p in projects %}
+  <tr>
+    <td>{{ p.title }}</td>
+    <td>{{ p.category }}</td>
+    <td>{{ '%0.0f'|format(p.budget_min) }} -
+        {{ '%0.0f'|format(p.budget_max) }}</td>
+    <td>{{ p.deadline }}</td>
+    <td><span class="badge badge-{{ p.status|lower }}">
+        {{ p.status }}</span></td>
+    <td>{{ p.bid_count or 0 }}</td>
+    <td><a href="{{ url_for('projects.project_detail',
+           pid=p.project_id) }}">Open</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="muted">
+      You have not posted any project yet.</td></tr>
+  {% endfor %}
+</table>
+<a class="btn-primary" href="{{ url_for('projects.post_project') }}">
+   + Post new project</a>
+{% endblock %}

@@ -1,0 +1,9 @@
+<!-- templates/error.html - friendly error page -->
+{% extends "base.html" %}
+{% block title %}Error {{ code }}{% endblock %}
+{% block content %}
+<div class="card auth-card" style="text-align:center">
+  <h2>{{ code }}</h2>
+  <p>{{ msg }}. Use the navigation above to continue.</p>
+</div>
+{% endblock %}

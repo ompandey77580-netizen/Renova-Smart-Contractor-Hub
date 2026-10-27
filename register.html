@@ -1,0 +1,32 @@
+<!-- templates/register.html - account creation with role choice -->
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h2>Create your account</h2>
+  <form method="post" novalidate>
+    <label>I am a</label>
+    <select name="role" required>
+      <option value="client">Client - I need renovation work</option>
+      <option value="contractor">Contractor - I do the work</option>
+    </select>
+    <label>Full name</label>
+    <input type="text" name="name" required maxlength="80">
+    <label>E-mail</label>
+    <input type="email" name="email" required>
+    <label>Phone (10 digits)</label>
+    <input type="text" name="phone" required pattern="[6-9][0-9]{9}">
+    <label>City</label>
+    <input type="text" name="city" required maxlength="60">
+    <label>Specialization (contractors only)</label>
+    <input type="text" name="specialization" maxlength="120">
+    <label>Password (8+ characters)</label>
+    <input type="password" name="password" id="pwd" required minlength="8">
+    <label>Repeat password</label>
+    <input type="password" name="password2" required minlength="8">
+    <button class="btn-primary" type="submit">Register</button>
+  </form>
+  <p class="muted">Already registered?
+     <a href="{{ url_for('auth.login') }}">Login here</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!-- templates/receipt.html - printable GST receipt -->
+{% extends "base.html" %}
+{% block title %}Receipt #{{ r.payment_id }}{% endblock %}
+{% block content %}
+<div class="card receipt">
+  <h2>Renova - Payment Receipt</h2>
+  <p class="muted">Receipt no. {{ r.payment_id }} -
+     {{ r.paid_on }}</p>
+  <table class="tbl">
+    <tr><td>Project</td><td>{{ r.project_title }}</td></tr>
+    <tr><td>Milestone</td><td>{{ r.milestone_title }}</td></tr>
+    <tr><td>Paid by</td><td>{{ r.client_name }}</td></tr>
+    <tr><td>Paid to</td><td>{{ r.contractor_name }}</td></tr>
+    <tr><td>Work value</td><td>Rs. {{ '%0.2f'|format(r.amount) }}</td></tr>
+    <tr><td>GST @ 18%</td><td>Rs. {{ '%0.2f'|format(r.tax) }}</td></tr>
+    <tr><th>Total paid</th><th>Rs. {{ '%0.2f'|format(r.total_paid) }}</th></tr>
+    <tr><td>Mode</td><td>{{ r.mode }}</td></tr>
+  </table>
+  <p class="muted small">This is a computer generated receipt of the
+     Renova - A Smart Contractor Hub system.</p>
+  <button class="btn-primary no-print"
+          onclick="window.print()">Print receipt</button>
+</div>
+{% endblock %}

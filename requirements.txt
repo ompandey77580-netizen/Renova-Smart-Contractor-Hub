@@ -1,0 +1,5 @@
+# requirements.txt
+flask==3.0.3
+mysql-connector-python==8.4.0
+pytest==8.2.0
+waitress==3.0.0

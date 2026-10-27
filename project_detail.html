@@ -1,0 +1,61 @@
+<!-- templates/project_detail.html - description, bids, bid form -->
+{% extends "base.html" %}
+{% block title %}{{ p.title }}{% endblock %}
+{% block content %}
+<h2>{{ p.title }} <span class="badge badge-{{ p.status|lower }}">
+    {{ p.status }}</span></h2>
+<div class="card">
+  <p><b>Client:</b> {{ p.client_name }}   <b>City:</b> {{ p.city }}
+       <b>Category:</b> {{ p.category }}</p>
+  <p><b>Budget:</b> Rs. {{ '%0.2f'|format(p.budget_min) }} -
+     Rs. {{ '%0.2f'|format(p.budget_max) }}</p>
+  <p><b>Schedule:</b> {{ p.start_date }} to {{ p.deadline }}</p>
+  <p>{{ p.description }}</p>
+</div>
+
+{% if session.role == 'contractor' and p.status == 'Open' %}
+<div class="card">
+  <h3>{% if my_bid and my_bid.status == 'Pending' %}Update your bid
+      {% else %}Place a bid{% endif %}</h3>
+  <form method="post"
+        action="{{ url_for('bids.place_bid', pid=p.project_id) }}">
+    <label>Amount (Rs.)</label>
+    <input type="number" step="0.01" min="1" name="amount" required>
+    <label>Duration (days)</label>
+    <input type="number" min="1" name="duration_days" required>
+    <label>Proposal</label>
+    <textarea name="proposal" rows="4" minlength="20" required></textarea>
+    <button class="btn-primary" type="submit">Submit bid</button>
+  </form>
+</div>
+{% endif %}
+
+<h3>Bids received ({{ bids|length }})</h3>
+<table class="tbl">
+  <tr><th>Contractor</th><th>Rating</th><th>Exp (yrs)</th><th>Amount</th>
+      <th>Days</th><th>Proposal</th><th></th></tr>
+  {% for b in bids %}
+  <tr>
+    <td>{{ b.contractor_name }}</td>
+    <td>{{ '%0.1f'|format(b.rating_avg) }} / 5</td>
+    <td>{{ b.experience_years }}</td>
+    <td>Rs. {{ '%0.2f'|format(b.amount) }}</td>
+    <td>{{ b.duration_days }}</td>
+    <td class="wrap">{{ b.proposal }}</td>
+    <td>
+      {% if session.role == 'client' and p.status == 'Open'
+           and b.status == 'Pending' %}
+      <form method="post" action="{{ url_for('bids.accept_bid',
+            bid_id=b.bid_id) }}"
+            onsubmit="return confirm('Hire this contractor?')">
+        <button class="btn-primary">Accept & Hire</button>
+      </form>
+      {% elif b.status == 'Accepted' %}<span class="badge badge-completed">
+        Hired</span>{% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="muted">No bids yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

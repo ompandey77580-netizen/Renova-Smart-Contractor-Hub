@@ -1,0 +1,44 @@
+<!-- templates/admin_reports.html - revenue report (UC-08, FR18) -->
+{% extends "base.html" %}
+{% block title %}Revenue Report{% endblock %}
+{% block content %}
+<h2>Revenue report</h2>
+
+<div class="card">
+  <form method="get" action="{{ url_for('reports.admin_reports') }}"
+        style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+    <div>
+      <label>From (YYYY-MM-DD)</label>
+      <input type="date" name="from" value="{{ frm }}">
+    </div>
+    <div>
+      <label>To (YYYY-MM-DD)</label>
+      <input type="date" name="to" value="{{ to }}">
+    </div>
+    <div>
+      <button class="btn-primary" type="submit">Generate</button>
+      <a class="btn-primary" style="display:inline-block; text-decoration:none;"
+         href="{{ url_for('reports.export_csv') }}">Export CSV</a>
+      <a class="btn-primary" style="display:inline-block; text-decoration:none;"
+         href="{{ url_for('admin.panel') }}">Back to panel</a>
+    </div>
+  </form>
+</div>
+
+<table class="tbl">
+  <tr><th>Day</th><th>Payments</th><th>Work value</th>
+      <th>GST (18%)</th><th>Total collected</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.day }}</td>
+    <td>{{ r.payments }}</td>
+    <td>Rs. {{ '%0.2f'|format(r.work_value) }}</td>
+    <td>Rs. {{ '%0.2f'|format(r.gst) }}</td>
+    <td><b>Rs. {{ '%0.2f'|format(r.total) }}</b></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" class="muted">
+      There is no data to export for the selected period.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

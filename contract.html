@@ -1,0 +1,76 @@
+<!-- templates/contract.html - milestone tracker for both roles -->
+{% extends "base.html" %}
+{% block title %}Contract #{{ c.contract_id }}{% endblock %}
+{% block content %}
+<h2>{{ c.project_title }}
+    <span class="badge badge-{{ c.status|lower }}">{{ c.status }}</span></h2>
+<div class="card">
+  <p><b>Client:</b> {{ c.client_name }} &nbsp; <b>Contractor:</b>
+     {{ c.contractor_name }}</p>
+  <p><b>Contract value:</b> Rs. {{ '%0.2f'|format(c.final_amount) }}
+     &nbsp; <b>Period:</b> {{ c.start_date }} to {{ c.end_date }}</p>
+</div>
+
+<h3>Milestones</h3>
+{% for m in milestones %}
+<div class="card milestone
+     {{ 'ms-overdue' if m.status in ('Pending','Completed') and m.due_date < today }}">
+  <p><b>Stage {{ loop.index }}: {{ m.title }}</b>
+     <span class="badge badge-{{ m.status|lower }}">{{ m.status }}</span></p>
+  <p>Due {{ m.due_date }} - Rs. {{ '%0.2f'|format(m.amount) }}</p>
+  {% if m.work_note %}<p class="muted">Note: {{ m.work_note }}</p>{% endif %}
+  {% if m.rework_remark %}
+     <p class="remark">Rework: {{ m.rework_remark }}</p>{% endif %}
+
+  {% if session.role == 'contractor'
+       and m.status in ('Pending','Completed') %}
+  <form method="post"
+        action="{{ url_for('contracts.mark_complete', mid=m.milestone_id) }}">
+    <input type="text" name="work_note" placeholder="What was done?"
+           required minlength="10">
+    <button class="btn-primary">Mark complete</button>
+  </form>
+  {% endif %}
+
+  {% if session.role == 'client' and m.status == 'Completed' %}
+  <form method="post"
+        action="{{ url_for('contracts.approve_milestone', mid=m.milestone_id) }}">
+    <button class="btn-primary" name="action" value="approve">
+      Approve</button>
+    <button class="btn-danger" name="action" value="rework">
+      Send rework</button>
+    <input type="text" name="remark" placeholder="Rework remark (optional)">
+  </form>
+  {% endif %}
+
+  {% if session.role == 'client' and m.status == 'Approved'
+       and not m.payment_id %}
+  <a class="btn-primary"
+     href="{{ url_for('payments.pay_milestone', mid=m.milestone_id) }}">
+     Pay this milestone</a>
+  {% elif m.status == 'Paid' %}
+  <span class="badge badge-paid">Paid</span>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% if session.role == 'client' and c.status == 'Completed' %}
+<div class="card">
+  <h3>Rate this contractor</h3>
+  <form method="post" action="{{ url_for('reviews.add_review',
+        cid=c.contract_id) }}">
+    <label>Stars (1-5)</label>
+    <select name="rating" required>
+      <option value="5">5 - Excellent</option>
+      <option value="4">4 - Good</option>
+      <option value="3">3 - Average</option>
+      <option value="2">2 - Poor</option>
+      <option value="1">1 - Bad</option>
+    </select>
+    <label>Comment</label>
+    <textarea name="comment" rows="3"></textarea>
+    <button class="btn-primary">Submit review</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+<!-- templates/dashboard_contractor.html -->
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ session.name }}</h2>
+<div class="cards">
+  <div class="stat"><span class="num">{{ s.bids or 0 }}</span>
+    <span class="lbl">Total bids</span></div>
+  <div class="stat"><span class="num">{{ s.pending_bids or 0 }}</span>
+    <span class="lbl">Bids pending</span></div>
+  <div class="stat"><span class="num">{{ active_contracts or 0 }}</span>
+    <span class="lbl">Active contracts</span></div>
+  <div class="stat"><span class="num">
+      Rs. {{ '%0.0f'|format(earn.earnings or 0) }}</span>
+    <span class="lbl">Earned (paid stages)</span></div>
+</div>
+
+<h3>My active work</h3>
+<table class="tbl">
+  <tr><th>Project</th><th>Client</th><th>Next stage</th>
+      <th>Due</th><th>Status</th><th></th></tr>
+  {% for c in contracts %}
+  <tr class="{{ 'row-danger' if c.overdue else '' }}">
+    <td>{{ c.project_title }}</td>
+    <td>{{ c.client_name }}</td>
+    <td>{{ c.next_milestone or 'All stages done' }}</td>
+    <td>{{ c.next_due or '-' }}</td>
+    <td><span class="badge badge-{{ c.status|lower }}">
+        {{ c.status }}</span></td>
+    <td><a href="{{ url_for('contracts.contract', cid=c.contract_id) }}">
+        Open</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">
+      No contracts yet - place a bid to get hired.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!-- templates/payment.html - GST summary before paying a milestone -->
+{% extends "base.html" %}
+{% block title %}Pay milestone{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h2>Pay milestone: {{ m.title }}</h2>
+  <table class="tbl">
+    <tr><th>Item</th><th>Amount</th></tr>
+    <tr><td>Milestone value</td>
+        <td>Rs. {{ '%0.2f'|format(amount) }}</td></tr>
+    <tr><td>GST @ 18%</td>
+        <td>Rs. {{ '%0.2f'|format(tax) }}</td></tr>
+    <tr><th>Total payable</th>
+        <th>Rs. {{ '%0.2f'|format(total) }}</th></tr>
+  </table>
+  <form method="post">
+    <label>Payment mode</label>
+    <select name="mode" required>
+      <option value="Cash">Cash</option>
+      <option value="UPI">UPI</option>
+      <option value="Card">Card</option>
+    </select>
+    <button class="btn-primary" type="submit">Confirm payment</button>
+    <a class="muted" href="{{ url_for('contracts.contract',
+       cid=m.contract_id) }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
